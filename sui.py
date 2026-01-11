@@ -1,69 +1,86 @@
-import asyncio
-from pyppeteer import launch
+import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
-async def automate_opengraph_sui():
-    browser = await launch(headless=False, args=['--start-maximized'])
-    page = await browser.newPage()
-    await page.setViewport({'width': 1920, 'height': 1080})
+def safe_click(driver, selector, by=By.CSS_SELECTOR, retries=3, wait_timeout=10):
+    """Click a button safely with retries."""
+    for attempt in range(retries):
+        try:
+            print(f"Waiting for selector: {selector}")
+            element = WebDriverWait(driver, wait_timeout).until(
+                EC.element_to_be_clickable((by, selector))
+            )
+            element.click()
+            print(f"Successfully clicked: {selector}")
+            return True
+        except Exception as e:
+            print(f"Attempt {attempt+1} failed for {selector}: {str(e)}")
+            time.sleep(2)
+    print(f"Failed to click {selector} after {retries} attempts")
+    return False
 
-    # 1. Go to faucet.sui.io and request faucet tokens
-    print("Opening faucet.sui.io...")
-    await page.goto('https://faucet.sui.io/', {'waitUntil': 'networkidle2'})
-
-    # Assuming faucet page has a button to request tokens for connected wallet
+def automate_opengraph_sui():
+    driver = None
     try:
-        faucet_button_selector = 'button#request-tokens'  # Update with actual selector
-        await page.waitForSelector(faucet_button_selector, timeout=10000)
-        await page.click(faucet_button_selector)
-        print("Clicked faucet request button")
-        await asyncio.sleep(10)  # Wait for faucet processing
+        # Initialize Chrome with options to avoid detection
+        print("Opening browser...")
+        options = webdriver.ChromeOptions()
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        options.add_argument('--start-maximized')
+        options.add_argument('--ignore-certificate-errors')
+        options.add_argument('--ignore-ssl-errors')
+
+        driver = webdriver.Chrome(options=options)
+        driver.set_page_load_timeout(30)
+        driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+
+        # 1. Go to faucet (optional)
+        print("Opening faucet.sui.io...")
+        try:
+            driver.get('https://faucet.sui.io/')
+            print("Successfully loaded faucet.sui.io")
+            time.sleep(5)
+        except Exception as e:
+            print(f"Warning: Could not load faucet.sui.io - {str(e)}")
+
+        # 2. Go to OpenGraph challenges page
+        print("Navigating to OpenGraph challenges...")
+        challenge_url = 'https://explorer.opengraphlabs.xyz/challenges'
+        try:
+            driver.get(challenge_url)
+            print(f"Successfully loaded: {challenge_url}")
+            time.sleep(5)
+        except TimeoutException:
+            print(f"Timeout loading {challenge_url}")
+        except Exception as e:
+            print(f"Error loading {challenge_url}: {str(e)}")
+
+        # Take screenshot for debugging
+        try:
+            driver.save_screenshot('debug_page.png')
+            print("Debug screenshot saved. Check debug_page.png to find correct selectors.")
+        except Exception as e:
+            print(f"Could not save screenshot: {e}")
+
+        # Keep browser open for manual inspection
+        input("Press Enter after manual navigation/inspection...")
+
+    except KeyboardInterrupt:
+        print("\nScript interrupted by user")
     except Exception as e:
-        print(f"Faucet interaction error or already claimed: {e}")
-
-    # 2. Go to OpenGraph challenges page
-    print("Navigating to OpenGraph challenges...")
-    await page.goto('https://explorer.opengraphlabs.xyz/challenges', {'waitUntil': 'networkidle2'})
-
-    # 3. Connect new wallet (Slush Wallet)
-    try:
-        connect_wallet_selector = 'button.connect-wallet'  # Update selector
-        await page.waitForSelector(connect_wallet_selector, timeout=15000)
-        await page.click(connect_wallet_selector)
-        print("Clicked connect wallet button")
-        print("Please approve wallet connection manually in Slush Wallet popup.")
-        await asyncio.sleep(30)  # Time for manual wallet approval
-    except Exception as e:
-        print(f"Wallet connection error or already connected: {e}")
-
-    # 4. Complete Step 1 - Sea Animal Classification
-    try:
-        step1_selector = 'a[href*="sea-animal-classification"]'  # Update selector
-        await page.waitForSelector(step1_selector, timeout=10000)
-        await page.click(step1_selector)
-        print("Started Step 1 - Sea Animal Classification")
-        # Add automation for this step if possible (e.g., clicking answers)
-        await asyncio.sleep(15)  # Wait or automate answers here
-        # Navigate back to challenges page
-        await page.goto('https://explorer.opengraphlabs.xyz/challenges', {'waitUntil': 'networkidle2'})
-    except Exception as e:
-        print(f"Step 1 error: {e}")
-
-    # 5. Complete Step 2 - Urban Traffic Dataset
-    try:
-        step2_selector = 'a[href*="urban-traffic-dataset"]'  # Update selector
-        await page.waitForSelector(step2_selector, timeout=10000)
-        await page.click(step2_selector)
-        print("Started Step 2 - Urban Traffic Dataset")
-        # Add automation for this step if possible
-        await asyncio.sleep(15)  # Wait or automate answers here
-    except Exception as e:
-        print(f"Step 2 error: {e}")
-
-    # Final screenshot for verification
-    await page.screenshot({'path': 'opengraph_sui_automation.png'})
-    print("Automation complete. Screenshot saved.")
-
-    await browser.close()
+        print(f"Fatal error: {str(e)}")
+    finally:
+        if driver:
+            try:
+                driver.quit()
+                print("Browser closed successfully")
+            except:
+                pass
 
 if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(automate_opengraph_sui())
+    automate_opengraph_sui()
